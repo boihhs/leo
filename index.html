@@ -3,12 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Glowing Text</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Memory Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #game-container {
+            margin-top: 50px;
+        }
+        #number-display {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        #numbers {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        #high-score {
+            margin-top: 100px;
+            font-size: 20px;
+            margin-bottom: 50px;
+        }
+        #number-input {
+            margin: 0 auto; /* Center horizontally */
+            margin-top: 10px;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        #check-button {
+          margin-top: 30px;
+          margin: 0 auto;
+          margin-bottom: 20px;
+        }
+        #restart-button {
+          margin-top: 30px;
+          margin: 0 auto;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="glow-text">Glowing Text</h1>
+    <div id="high-score">High Score: 0</div>
+    <h1>Memory Game</h1>
+    <div id="game-container">
+        
+        <div id="number-display">Remember these numbers:</div>
+        <div id="numbers"></div>
+        <input type="number" id="number-input" placeholder="Enter numbers">
+        
+        <button id="check-button">Check</button>
+        <button id="restart-button">Restart</button>
+        <p id="result"></p>
     </div>
+
+    <script>
+        let sequence = '';
+        let currentLevel = 1;
+        let userSequence = '';
+        let currentRound = 0;
+        let highScore = 0;
+
+        function generateSequence(length) {
+            let seq = '';
+            for (let i = 0; i < length; i++) {
+                seq += Math.floor(Math.random() * 10); // Generates random numbers from 0 to 9
+            }
+            return seq;
+        }
+
+        function nextRound() {
+            document.getElementById("numbers").style.display = "block";
+            document.getElementById("number-display").style.display = "block";
+            document.getElementById("check-button").style.display = "none";
+            document.getElementById("restart-button").style.display = "none";
+            document.getElementById("number-input").style.display = "none";
+            sequence = generateSequence(currentLevel);
+            document.getElementById('numbers').textContent = sequence;
+            document.getElementById('number-input').value = '';
+            userSequence = '';
+            currentRound = currentLevel;
+
+            setTimeout(function(){
+              document.getElementById("check-button").style.display = "block";
+              document.getElementById("restart-button").style.display = "block";
+              document.getElementById("number-input").style.display = "block";
+              document.getElementById("numbers").style.display = "none";
+              document.getElementById("number-display").style.display = "none";
+            }, currentRound * 1000);
+           
+        }
+
+        function restart() {
+            currentRound = 0;
+            currentLevel = 1;
+            resultDisplay.textContent = '';
+            nextRound();
+        }
+
+        const checkButton = document.getElementById('check-button');
+        const checkRestart = document.getElementById('restart-button');
+        const userInput = document.getElementById('number-input');
+        const resultDisplay = document.getElementById('result');
+        const highScoreText = document.getElementById('high-score');
+        checkRestart.addEventListener('click', function() {
+          restart()
+        });
+
+        checkButton.addEventListener('click', function() {
+            const userInputValue = userInput.value.trim();
+            userSequence += userInputValue;
+            
+            if (userSequence === sequence) {
+                resultDisplay.textContent = `Round ${currentRound} complete!`;
+                currentRound++;
+                currentLevel++;
+                if (currentRound-1 > highScore){
+                  highScore = currentRound-1;
+                  highScoreText.textContent = `High Score: ${highScore}`;
+                }
+                nextRound();
+                
+            } else {
+              document.getElementById("check-button").style.display = "none";
+              document.getElementById("number-input").style.display = "none";
+              resultDisplay.textContent = `You lost. \n Your score was: ${currentRound-1}`;
+                
+            }
+        });
+        
+        nextRound();
+    </script>
 </body>
 </html>
